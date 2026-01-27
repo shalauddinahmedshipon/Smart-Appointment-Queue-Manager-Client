@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { AppTagTypes } from "./tags";
 
 export const baseApi = createApi({
   reducerPath: "api",
@@ -7,4 +8,5 @@ export const baseApi = createApi({
     credentials: "include",
   }),
   endpoints: () => ({}),
+  tagTypes: ['ActivityLogs', 'DashboardStats'] as AppTagTypes[],
 });
