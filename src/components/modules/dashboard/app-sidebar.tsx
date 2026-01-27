@@ -2,12 +2,13 @@
 
 import * as React from "react"
 import {
-  SquareTerminal,
   LayoutDashboard,
-  User,
-  FolderKanban,
-  Image,
+  Calendar,
+  Scissors,
   Users,
+  Clock,
+  Settings,
+  Building2,
 } from "lucide-react"
 
 import {
@@ -26,14 +27,14 @@ import { useAppSelector } from "@/store/hooks"
 import type { NavItem } from "@/types/navigation.types"
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
-const { user, isAuthenticated } = useAppSelector((state) => state.auth)
+  const { user, isAuthenticated } = useAppSelector((state) => state.auth)
 
-  // If not yet authenticated → show minimal / loading sidebar
+  // Show loading/minimal sidebar while auth is checking
   if (!isAuthenticated) {
     return (
       <Sidebar collapsible="icon" {...props}>
         <SidebarHeader>
-          <div className="h-10 bg-muted animate-pulse rounded-md" /> {/* placeholder */}
+          <div className="h-10 bg-muted animate-pulse rounded-md" />
         </SidebarHeader>
         <SidebarContent>
           <div className="space-y-4 p-4">
@@ -45,81 +46,71 @@ const { user, isAuthenticated } = useAppSelector((state) => state.auth)
       </Sidebar>
     )
   }
-  /* ---------------------------
-     User & Team Data
-  ---------------------------- */
+
+  // ────────────────────────────────────────────────
+  // User & Organization Data
+  // ────────────────────────────────────────────────
   const data = React.useMemo(
     () => ({
       user: {
-        name: user?.fullName ?? "MD.SHIPON",
-        email: user?.email ?? "shalauddinahmedshipon2018@gmail.com",
-        avatar: "/avatars/shadcn.jpg",
+        name: user?.organizationName ?? "Your Clinic",
+        email: user?.email ?? "admin@clinic.com",
+        avatar: user?.organizationLogo ?? "/default-clinic-logo.png", // fallback image
       },
       teams: [
         {
-          name: "MD.SHIPON",
-          logo: SquareTerminal,
-          plan: "Software Engineer",
+          name: user?.organizationName ?? "Clinic",
+          logo: user?.organizationLogo ?? "/default-clinic-logo.png",
+          // logo: Building2,           // suitable icon for organization/clinic
+          plan: "Organization Admin", // can be removed or made dynamic later
         },
       ],
     }),
     [user]
   )
 
-  /* ---------------------------
-     Navigation (IMMUTABLE)
-  ---------------------------- */
-  const navMain: NavItem[] = React.useMemo(() => {
-    const baseNav: NavItem[] = [
+  // ────────────────────────────────────────────────
+  // Navigation Items – relevant to appointment queue system
+  // ────────────────────────────────────────────────
+  const navMain: NavItem[] = React.useMemo(
+    () => [
       {
         title: "Dashboard",
         url: "/dashboard",
         icon: LayoutDashboard,
       },
       {
-        title: "Profile",
-        icon: User,
-        items: [
-          { title: "Profile Info", url: "/dashboard/profile/general" },
-          { title: "Contact Info", url: "/dashboard/profile/contact" },
-          { title: "Coding Profiles", url: "/dashboard/profile/coding-profiles" },
-          { title: "Education", url: "/dashboard/profile/education" },
-          { title: "Experience", url: "/dashboard/profile/experience" },
-          { title: "Skills", url: "/dashboard/profile/skills" },
-        ],
+        title: "Appointments",
+        url: "/dashboard/appointments",
+        icon: Calendar,
       },
       {
-        title: "Content",
-        icon: FolderKanban,
-        items: [
-          { title: "Projects", url: "/dashboard/content/projects" },
-          { title: "Blogs", url: "/dashboard/content/blogs" },
-          { title: "Events", url: "/dashboard/content/events" },
-          { title: "Achievements", url: "/dashboard/content/achievements" },
-        ],
+        title: "Queue Manager",
+        url: "/dashboard/queue",
+        icon: Clock,
       },
       {
-        title: "Media",
-        icon: Image,
-        items: [{ title: "Gallery", url: "/dashboard/media/gallery" }],
+        title: "Services",
+        url: "/dashboard/services",
+        icon: Scissors,
       },
-    ]
-
-    // ✅ Role-based nav (NO mutation)
-    if (user?.role === "ADMIN") {
-      baseNav.push({
-        title: "Users",
-        url: "/dashboard/users",
+      {
+        title: "Staff",
+        url: "/dashboard/staff",
         icon: Users,
-      })
-    }
+      },
+      {
+        title: "Settings",
+        url: "/dashboard/settings",
+        icon: Settings,
+      },
+    ],
+    []
+  )
 
-    return baseNav
-  }, [user?.role])
-
-  /* ---------------------------
-     Render
-  ---------------------------- */
+  // ────────────────────────────────────────────────
+  // Render
+  // ────────────────────────────────────────────────
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -138,5 +129,3 @@ const { user, isAuthenticated } = useAppSelector((state) => state.auth)
     </Sidebar>
   )
 }
-
-

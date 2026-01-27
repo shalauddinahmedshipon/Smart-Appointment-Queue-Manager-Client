@@ -134,6 +134,15 @@ export default function LoginForm() {
             </Button>
           </form>
         </Form>
+        <p className="text-center text-sm text-muted-foreground mt-6">
+  Don&apos;t have an account?{" "}
+  <button
+    onClick={() => router.push("/signup")}
+    className="text-primary hover:underline font-medium"
+  >
+    Sign up here
+  </button>
+</p>
       </CardContent>
     </Card>
   );

@@ -58,7 +58,7 @@ export function NavUser({
       console.error("Logout failed", err)
     } finally {
       dispatch(logoutAction())
-      router.replace("/login")
+      router.replace("/")
     }
   }
 

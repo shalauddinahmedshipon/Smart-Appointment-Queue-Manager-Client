@@ -1,8 +1,9 @@
 export interface User {
   id: string;
   email: string;
-  role: "ADMIN" | "CONTENT_MANAGER";
-  fullName?: string | null;
+  organizationName: string;
+  organizationLogo?: string | null;
+  createdAt?: string;
 }
 
 export interface AuthState {

@@ -1,33 +1,52 @@
+// store/api/auth.api.ts
+import { User } from "@/types/auth.types";
 import { baseApi } from "./baseApi";
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    login: builder.mutation({
+    login: builder.mutation<{
+      user: any;
+    }, { email: string; password: string }>({
       query: (credentials) => ({
-        url: "/auth/login",
+        url: "/auth/login",        // ← Fixed: was "/auth/"
         method: "POST",
-        body: credentials
+        body: credentials,
       }),
       transformResponse: (response: any) => ({
-        user: response.data.user,
+        user: response.data,       // ← Backend returns { data: account }
       }),
     }),
 
-    // 🔥 NEW — get current user
-    getMe: builder.query({
-      query: () => ({
-        url: "/auth/me",
-        method: "GET"
+    signup: builder.mutation<{
+      user: any;
+    }, FormData>({
+      query: (formData) => ({
+        url: "/auth/signup",
+        method: "POST",
+        body: formData,
       }),
-      transformResponse: (response: any) => response.data,
+      transformResponse: (response: any) => ({
+        user: response.data,
+      }),
     }),
+
+    getMe: builder.query<User, void>({
+      query: () => "/auth/me",
+      transformResponse: (response: any) => response, // ← getMe returns account directly
+    }),
+
     logout: builder.mutation<void, void>({
       query: () => ({
         url: "/auth/logout",
-        method: "POST"
+        method: "POST",
       }),
     }),
   }),
 });
 
-export const { useLoginMutation, useGetMeQuery,useLogoutMutation } = authApi;
+export const {
+  useLoginMutation,
+  useSignupMutation,
+  useGetMeQuery,
+  useLogoutMutation,
+} = authApi;
