@@ -117,7 +117,7 @@ export default function StaffPage() {
 
   const handleDelete = (staff: Staff) => {
     toast.custom(
-      (t) => (
+      (t:any) => (
         <div className="bg-background border rounded-lg shadow-lg p-6 max-w-sm w-full">
           <h3 className="text-lg font-semibold mb-2">Delete Staff?</h3>
           <p className="text-sm text-muted-foreground mb-6">
