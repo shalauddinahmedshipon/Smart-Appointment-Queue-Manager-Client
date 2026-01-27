@@ -1,89 +1,105 @@
+// store/api/appointment.api.ts
+import { AppointmentInput } from "@/lib/validations/appointment.schema";
 import { baseApi } from "./baseApi";
 import { Appointment } from "@/types/appointment.types";
 
-export const appointmentApi = baseApi.injectEndpoints({
+const appointmentApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getAppointments: builder.query<Appointment[], { date?: string; staffId?: string }>({
-      query: (params) => ({
-        url: "/appointment",
-        params,
-      }),
-      providesTags: () => ["Appointments", "AppointmentsList"],
+    // Get all appointments
+    getAppointments: builder.query<Appointment[], void>({
+      query: () => "/appointment",
+      providesTags: ["Appointments", "AppointmentsList", "DashboardStats"],
     }),
 
-    createAppointment: builder.mutation<
-      Appointment,
-      {
-        customerName: string;
-        serviceId: string;
-        staffId?: string;
-        appointmentAt: string;
-      }
-    >({
+    // Get single appointment
+    getAppointment: builder.query<Appointment, string>({
+      query: (id) => `/appointment/${id}`,
+      providesTags: (result, error, id) => [{ type: "Appointment", id }],
+    }),
+
+    // Create appointment
+    createAppointment: builder.mutation<Appointment, AppointmentInput>({
       query: (body) => ({
         url: "/appointment",
         method: "POST",
         body,
       }),
-      invalidatesTags: ["Appointments", "AppointmentsList", "WaitingQueue", "DashboardStats", "ActivityLogs"],
+      invalidatesTags: [
+        "Appointments",
+        "AppointmentsList",
+        "WaitingQueue",
+        "DashboardStats",
+        "ActivityLogs",
+      ],
     }),
 
+    // Update appointment
     updateAppointment: builder.mutation<
       Appointment,
-      { id: string } & Partial<{
-        customerName?: string;
-        serviceId?: string;
-        staffId?: string;
-        appointmentAt?: string;
-        status?: Appointment["status"];
-      }>
+      { id: string } & Partial<AppointmentInput>
     >({
       query: ({ id, ...patch }) => ({
         url: `/appointment/${id}`,
         method: "PATCH",
         body: patch,
       }),
-      invalidatesTags: (result, error, arg) => [
+      invalidatesTags: (result, error, { id }) => [
         "Appointments",
         "AppointmentsList",
         "WaitingQueue",
         "DashboardStats",
         "ActivityLogs",
-        { type: "Appointment", id: arg.id },
+        { type: "Appointment", id },
       ],
     }),
 
-    cancelAppointment: builder.mutation<{ message: string }, string>({
+    // Delete appointment
+    deleteAppointment: builder.mutation<{ message: string }, string>({
       query: (id) => ({
         url: `/appointment/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Appointments", "AppointmentsList", "WaitingQueue", "DashboardStats", "ActivityLogs"],
+      invalidatesTags: [
+        "Appointments",
+        "AppointmentsList",
+        "WaitingQueue",
+        "DashboardStats",
+        "ActivityLogs",
+      ],
     }),
 
+    // Get waiting queue
     getWaitingQueue: builder.query<Appointment[], void>({
       query: () => "/appointment/waiting-queue",
-      providesTags: () => ["WaitingQueue"],
+      providesTags: ["WaitingQueue", "DashboardStats"],
     }),
 
+    // Assign from queue (auto-assign)
     assignFromQueue: builder.mutation<
-      { processed: number; assigned: number; skipped: number },
+      { processed: number; assigned: number; skipped: number; message: string },
       void
     >({
       query: () => ({
         url: "/appointment/assign-queue",
         method: "PATCH",
       }),
-      invalidatesTags: ["WaitingQueue", "Appointments", "DashboardStats", "ActivityLogs"],
+      invalidatesTags: [
+        "Appointments",
+        "AppointmentsList",
+        "WaitingQueue",
+        "DashboardStats",
+        "ActivityLogs",
+      ],
     }),
   }),
 });
 
 export const {
   useGetAppointmentsQuery,
+  useGetAppointmentQuery,
   useCreateAppointmentMutation,
   useUpdateAppointmentMutation,
-  useCancelAppointmentMutation,
+  useDeleteAppointmentMutation,
   useGetWaitingQueueQuery,
   useAssignFromQueueMutation,
 } = appointmentApi;

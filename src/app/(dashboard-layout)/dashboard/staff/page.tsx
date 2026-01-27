@@ -228,7 +228,7 @@ export default function StaffPage() {
                         {staff.serviceType}
                       </Badge>
                     </TableCell>
-                    <TableCell>{staff.dailyCapacity} hours/day</TableCell>
+                    <TableCell>{staff.dailyCapacity}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         {staff.status === "AVAILABLE" ? (
@@ -335,7 +335,7 @@ export default function StaffPage() {
     name="dailyCapacity"
     render={({ field }) => (
       <FormItem>
-        <FormLabel>Daily Capacity (hours/day)</FormLabel>
+        <FormLabel>Daily Capacity</FormLabel>
         <FormControl>
           <Input
             type="number"
