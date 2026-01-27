@@ -55,14 +55,9 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Service } from "@/types/service.types";
 import { Badge } from "@/components/ui/badge";
+import { ServiceForm, serviceSchema } from "@/lib/validations/service.schema";
 
-const serviceSchema = z.object({
-  name: z.string().min(2, "Service name must be at least 2 characters"),
-  duration: z.enum(["MIN_15", "MIN_30", "MIN_60"]),
-  requiredStaffType: z.enum(["DOCTOR", "CONSULTANT", "SUPPORT_AGENT"]),
-});
 
-type ServiceForm = z.infer<typeof serviceSchema>;
 
 export default function ServicesPage() {
   const { data: services = [], isLoading } = useGetServicesQuery();
