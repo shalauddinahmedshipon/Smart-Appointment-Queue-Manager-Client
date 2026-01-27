@@ -3,6 +3,7 @@ export type AppTagTypes =
   | 'ActivityLogs'
   | 'DashboardStats'
   | 'Appointments'
+  | 'Appointment'
   | 'AppointmentsList'
   | 'WaitingQueue'
   | 'Services'
