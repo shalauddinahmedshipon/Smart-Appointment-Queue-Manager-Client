@@ -8,5 +8,14 @@ export const baseApi = createApi({
     credentials: "include",
   }),
   endpoints: () => ({}),
-  tagTypes: ['ActivityLogs', 'DashboardStats'] as AppTagTypes[],
+  tagTypes: [
+   'ActivityLogs'
+  ,'DashboardStats'
+  ,'Appointments'
+  ,'AppointmentsList'
+  ,'WaitingQueue'
+  ,'Services'
+  ,'ServicesList'
+  ,'Staff'
+  ,'StaffList'] as AppTagTypes[],
 });
