@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Lock } from "lucide-react";
+import { Loader2, Lock, User } from "lucide-react";
 
 import {
   Form,
@@ -52,15 +52,18 @@ export default function LoginForm() {
         })
       );
 
-     toast.success("Login successful");
-
+      toast.success("Login successful");
 
       router.push("/dashboard");
     } catch (err: any) {
-
-  toast.error(err?.data?.message ?? "Invalid credentials");
-
+      toast.error(err?.data?.message ?? "Invalid credentials");
     }
+  };
+
+  const fillDemoCredentials = () => {
+    form.setValue("email", "shalauddinahmedshipon2018@gmail.com");
+    form.setValue("password", "123456");
+    toast.info("Demo credentials filled");
   };
 
   return (
@@ -122,6 +125,20 @@ export default function LoginForm() {
               )}
             />
 
+            {/* Demo Credentials Button */}
+            <div className="flex items-center justify-center">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={fillDemoCredentials}
+                className="text-xs"
+              >
+                <User className="mr-2 h-3.5 w-3.5" />
+                Use Demo Credentials
+              </Button>
+            </div>
+
             <Button
               type="submit"
               className="w-full mt-3 py-4"
@@ -135,14 +152,14 @@ export default function LoginForm() {
           </form>
         </Form>
         <p className="text-center text-sm text-muted-foreground mt-6">
-  Don&apos;t have an account?{" "}
-  <button
-    onClick={() => router.push("/signup")}
-    className="text-primary hover:underline font-medium"
-  >
-    Sign up here
-  </button>
-</p>
+          Don&apos;t have an account?{" "}
+          <button
+            onClick={() => router.push("/signup")}
+            className="text-primary hover:underline font-medium"
+          >
+            Sign up here
+          </button>
+        </p>
       </CardContent>
     </Card>
   );
