@@ -72,15 +72,13 @@ const onSubmit = async (values: LoginInput) => {
 
     toast.success("Login successful");
 
-    // ✅ Force a full page reload to /dashboard
-    // This ensures middleware runs with the new cookie
-    window.location.href = "/dashboard";
+    // Now we can use router.push since we have client-side protection
+    router.push("/dashboard");
     
   } catch (err: any) {
     toast.error(err?.data?.message ?? "Invalid credentials");
   }
 };
-
 
   const fillDemoCredentials = () => {
     form.setValue("email", "shalauddinahmedshipon2018@gmail.com");
