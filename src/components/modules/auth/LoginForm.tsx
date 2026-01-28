@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -48,13 +49,13 @@ export default function LoginForm() {
     try {
       const res = await login(values).unwrap();
 
-       dispatch(
-      setCredentials({
-        user: res.user,
-        accessToken: res.accessToken, // 🔥 REQUIRED
-      })
-    );
-     store.dispatch(baseApi.util.resetApiState())
+      dispatch(
+        setCredentials({
+          user: res.user,
+          accessToken: res.accessToken,
+        })
+      );
+      store.dispatch(baseApi.util.resetApiState());
       toast.success("Login successful");
 
       router.push("/dashboard");
@@ -63,7 +64,6 @@ export default function LoginForm() {
     }
   };
 
-
   const fillDemoCredentials = () => {
     form.setValue("email", "shalauddinahmedshipon2018@gmail.com");
     form.setValue("password", "123456");
@@ -71,22 +71,22 @@ export default function LoginForm() {
   };
 
   return (
-    <Card className="w-full max-w-md shadow-xl border-muted">
-      <CardHeader className="space-y-2 text-center">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-          <Lock className="h-6 w-6 text-primary" />
+    <Card className="w-full max-w-md shadow-2xl border-0 bg-white/95 backdrop-blur">
+      <CardHeader className="space-y-3 text-center pb-6">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/70 shadow-lg">
+          <Lock className="h-7 w-7 text-white" />
         </div>
 
-        <CardTitle className="text-2xl font-bold">
-          Admin Login
+        <CardTitle className="text-3xl font-bold tracking-tight">
+          Welcome Back
         </CardTitle>
 
-        <CardDescription>
-          Enter your credentials to access the dashboard
+        <CardDescription className="text-base">
+          Sign in to access your dashboard
         </CardDescription>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className="px-8 pb-8">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
@@ -97,11 +97,12 @@ export default function LoginForm() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel className="text-sm font-semibold">Email Address</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="admin@email.com"
                       autoComplete="email"
+                      className="h-11"
                       {...field}
                     />
                   </FormControl>
@@ -115,12 +116,13 @@ export default function LoginForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel className="text-sm font-semibold">Password</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
                       placeholder="••••••••"
                       autoComplete="current-password"
+                      className="h-11"
                       {...field}
                     />
                   </FormControl>
@@ -129,14 +131,13 @@ export default function LoginForm() {
               )}
             />
 
-            {/* Demo Credentials Button */}
-            <div className="flex items-center justify-center">
+            <div className="flex items-center justify-center pt-2">
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={fillDemoCredentials}
-                className="text-xs"
+                className="text-xs border-dashed"
               >
                 <User className="mr-2 h-3.5 w-3.5" />
                 Use Demo Credentials
@@ -145,21 +146,22 @@ export default function LoginForm() {
 
             <Button
               type="submit"
-              className="w-full mt-3 py-4"
+              className="w-full h-11 text-base font-semibold"
               disabled={isLoading}
             >
               {isLoading && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
-              Sign in
+              Sign In
             </Button>
           </form>
         </Form>
+
         <p className="text-center text-sm text-muted-foreground mt-6">
           Don&apos;t have an account?{" "}
           <button
             onClick={() => router.push("/signup")}
-            className="text-primary hover:underline font-medium"
+            className="text-primary hover:underline font-semibold"
           >
             Sign up here
           </button>
@@ -168,3 +170,182 @@ export default function LoginForm() {
     </Card>
   );
 }
+
+
+
+
+
+
+
+
+// "use client";
+
+// import { useRouter } from "next/navigation";
+// import { useForm } from "react-hook-form";
+// import { zodResolver } from "@hookform/resolvers/zod";
+// import { Loader2, Lock, User } from "lucide-react";
+// import banner from "./../../../../public/hms-2.jpg"
+
+// import {
+//   Form,
+//   FormControl,
+//   FormField,
+//   FormItem,
+//   FormLabel,
+//   FormMessage,
+// } from "@/components/ui/form";
+// import { Button } from "@/components/ui/button";
+// import { Input } from "@/components/ui/input";
+// import {
+//   Card,
+//   CardContent,
+//   CardHeader,
+//   CardTitle,
+//   CardDescription,
+// } from "@/components/ui/card";
+
+// import { loginSchema, LoginInput } from "@/lib/validations/auth.schema";
+// import { useLoginMutation } from "@/store/api/auth.api";
+// import { useAppDispatch } from "@/store/hooks";
+// import { setCredentials } from "@/store/slices/auth.slice";
+// import { toast } from "sonner";
+// import { store } from "@/store";
+// import { baseApi } from "@/store/api";
+
+// export default function LoginForm() {
+//   const router = useRouter();
+//   const dispatch = useAppDispatch();
+//   const [login, { isLoading }] = useLoginMutation();
+
+//   const form = useForm<LoginInput>({
+//     resolver: zodResolver(loginSchema),
+//     defaultValues: {
+//       email: "",
+//       password: "",
+//     },
+//   });
+
+//   const onSubmit = async (values: LoginInput) => {
+//     try {
+//       const res = await login(values).unwrap();
+
+//        dispatch(
+//       setCredentials({
+//         user: res.user,
+//         accessToken: res.accessToken, // 🔥 REQUIRED
+//       })
+//     );
+//      store.dispatch(baseApi.util.resetApiState())
+//       toast.success("Login successful");
+
+//       router.push("/dashboard");
+//     } catch (err: any) {
+//       toast.error(err?.data?.message ?? "Invalid credentials");
+//     }
+//   };
+
+
+//   const fillDemoCredentials = () => {
+//     form.setValue("email", "shalauddinahmedshipon2018@gmail.com");
+//     form.setValue("password", "123456");
+//     toast.info("Demo credentials filled");
+//   };
+
+//   return (
+//     <Card className="w-full max-w-md shadow-xl border-muted">
+//       <CardHeader className="space-y-2 text-center">
+//         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+//           <Lock className="h-6 w-6 text-primary" />
+//         </div>
+
+//         <CardTitle className="text-2xl font-bold">
+//           Admin Login
+//         </CardTitle>
+
+//         <CardDescription>
+//           Enter your credentials to access the dashboard
+//         </CardDescription>
+//       </CardHeader>
+
+//       <CardContent>
+//         <Form {...form}>
+//           <form
+//             onSubmit={form.handleSubmit(onSubmit)}
+//             className="space-y-5"
+//           >
+//             <FormField
+//               control={form.control}
+//               name="email"
+//               render={({ field }) => (
+//                 <FormItem>
+//                   <FormLabel>Email</FormLabel>
+//                   <FormControl>
+//                     <Input
+//                       placeholder="admin@email.com"
+//                       autoComplete="email"
+//                       {...field}
+//                     />
+//                   </FormControl>
+//                   <FormMessage />
+//                 </FormItem>
+//               )}
+//             />
+
+//             <FormField
+//               control={form.control}
+//               name="password"
+//               render={({ field }) => (
+//                 <FormItem>
+//                   <FormLabel>Password</FormLabel>
+//                   <FormControl>
+//                     <Input
+//                       type="password"
+//                       placeholder="••••••••"
+//                       autoComplete="current-password"
+//                       {...field}
+//                     />
+//                   </FormControl>
+//                   <FormMessage />
+//                 </FormItem>
+//               )}
+//             />
+
+//             {/* Demo Credentials Button */}
+//             <div className="flex items-center justify-center">
+//               <Button
+//                 type="button"
+//                 variant="outline"
+//                 size="sm"
+//                 onClick={fillDemoCredentials}
+//                 className="text-xs"
+//               >
+//                 <User className="mr-2 h-3.5 w-3.5" />
+//                 Use Demo Credentials
+//               </Button>
+//             </div>
+
+//             <Button
+//               type="submit"
+//               className="w-full mt-3 py-4"
+//               disabled={isLoading}
+//             >
+//               {isLoading && (
+//                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+//               )}
+//               Sign in
+//             </Button>
+//           </form>
+//         </Form>
+//         <p className="text-center text-sm text-muted-foreground mt-6">
+//           Don&apos;t have an account?{" "}
+//           <button
+//             onClick={() => router.push("/signup")}
+//             className="text-primary hover:underline font-medium"
+//           >
+//             Sign up here
+//           </button>
+//         </p>
+//       </CardContent>
+//     </Card>
+//   );
+// }

@@ -58,7 +58,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
     {
       name: user?.organizationName ?? "Clinic",
       logo: user?.organizationLogo ?? "/default-clinic-logo.png",
-      plan: "Organization Admin",
+      plan: "Platform Admin",
     },
   ],
 }
