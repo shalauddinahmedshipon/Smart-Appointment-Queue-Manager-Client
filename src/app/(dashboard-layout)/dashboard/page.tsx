@@ -15,6 +15,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { Calendar, CheckCircle, Clock, AlertCircle, Users } from "lucide-react";
 import StatCard from "@/components/modules/dashboard/state-card";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 export default function DashboardPage() {
   const {
@@ -27,7 +29,9 @@ export default function DashboardPage() {
     data: logs = [],
     isLoading: logsLoading,
     error: logsError,
-  } = useGetActivityLogsQuery({ limit: 10 });
+  } = useGetActivityLogsQuery({ limit: 5 });
+
+  const router =useRouter();
 
   if (statsLoading || logsLoading) {
     return (
@@ -105,50 +109,58 @@ export default function DashboardPage() {
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Staff Load Summary */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Staff Load Today</CardTitle>
-            <CardDescription>
-              Current daily appointment capacity usage
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {staffLoad.length === 0 ? (
-              <p className="text-muted-foreground text-center py-8">
-                No staff members found
-              </p>
-            ) : (
-              <div className="space-y-4">
-                {staffLoad.map((staff) => (
-                  <div
-                    key={staff.name}
-                    className="flex items-center justify-between py-2 border-b last:border-0"
-                  >
-                    <div className="flex items-center gap-3 text-xs">
-                      <Users className="h-5 w-5 text-muted-foreground" />
-                      <span className="font-medium">{staff.name}</span>
-                    </div>
-                    <Badge
-                      variant={
-                        staff.status === "OK" ? "secondary" : "destructive"
-                      }
-                      className="text-xs"
-                    >
-                      {staff.load} {staff.status}
-                    </Badge>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+    <Card>
+  <CardHeader>
+    <CardTitle>Staff Load Today</CardTitle>
+    <CardDescription>Current daily appointment capacity usage</CardDescription>
+  </CardHeader>
+  
+  <CardContent className="space-y-6">
+    {staffLoad.length === 0 ? (
+      <p className="text-muted-foreground text-center py-8">
+        No staff members found
+      </p>
+    ) : (
+      <div className="space-y-4">
+        {staffLoad.slice(0, 5).map((staff) => (
+          <div
+            key={staff.name}
+            className="flex items-center justify-between py-2 border-b last:border-0"
+          >
+            <div className="flex items-center gap-3 text-xs">
+              <Users className="h-5 w-5 text-muted-foreground" />
+              <span className="font-medium">{staff.name}</span>
+            </div>
+            <Badge
+              variant={staff.status === "OK" ? "secondary" : "destructive"}
+              className="text-xs"
+            >
+              {staff.load} {staff.status}
+            </Badge>
+          </div>
+        ))}
+      </div>
+    )}
 
+    {/* Always show the button when there is data */}
+    {staffLoad.length > 0 && (
+      <Button
+        variant="ghost"
+        size="sm"
+        className="w-full mt-2 text-muted-foreground hover:text-foreground"
+        onClick={() => router.push("/dashboard/staff")}
+      >
+        View All Staff →
+      </Button>
+    )}
+  </CardContent>
+</Card>
         {/* Recent Activity */}
         <Card>
           <CardHeader>
             <CardTitle>Recent Activity</CardTitle>
             <CardDescription>
-              Latest actions in the system (last 10)
+              Latest actions in the system (last 5)
             </CardDescription>
           </CardHeader>
           <CardContent>
