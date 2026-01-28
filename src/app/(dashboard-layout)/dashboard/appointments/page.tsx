@@ -42,7 +42,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Loader2, Plus, Edit, Trash2, Calendar, User, Clock, Filter, X, AlertCircle, Eye } from "lucide-react";
+import { Loader2, Plus, Edit, Trash2, Calendar, User, Clock, Filter, X, AlertCircle, Eye, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -79,6 +79,10 @@ export default function AppointmentsPage() {
   const [filterDate, setFilterDate] = useState("");
   const [filterStaff, setFilterStaff] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
+
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const form = useForm<AppointmentInput>({
     resolver: zodResolver(appointmentSchema),
@@ -179,6 +183,17 @@ const getMinDateTime = () => {
       return true;
     });
   }, [appointments, filterDate, filterStaff, filterStatus]);
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredAppointments.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedAppointments = filteredAppointments.slice(startIndex, endIndex);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterDate, filterStaff, filterStatus, itemsPerPage]);
 
   const clearFilters = () => {
     setFilterDate("");
@@ -418,103 +433,188 @@ const onSubmit = async (values: AppointmentInput) => {
           : 'No appointments scheduled yet. Click "New Appointment" to get started.'}
       </p>
     ) : (
-      <div className="border rounded-lg overflow-hidden">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Customer</TableHead>
-                <TableHead>Service</TableHead>
-                <TableHead>Staff</TableHead>
-                <TableHead>Date & Time</TableHead>
-                <TableHead>Duration</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredAppointments.map((appointment) => (
-                <TableRow key={appointment.id}>
-                  <TableCell className="font-medium">
-                    <div className="flex items-center gap-2">
-                      <User className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                      <span className="max-w-[120px] lg:max-w-none truncate lg:whitespace-normal">
-                        {appointment.customerName}
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <span className="max-w-[100px] lg:max-w-none truncate lg:whitespace-normal block">
-                      {appointment.service.name}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    {appointment.staff ? (
-                      <span className="text-sm max-w-[80px] lg:max-w-none truncate lg:whitespace-normal block">
-                        {appointment.staff.name}
-                      </span>
-                    ) : (
-                      <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200 text-xs whitespace-nowrap">
-                        Queue
-                      </Badge>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex flex-col lg:flex-row lg:items-center gap-0.5 lg:gap-2 text-sm">
-                      <div className="flex items-center gap-1.5 whitespace-nowrap">
-                        <Calendar className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-                        <span>{format(parseISO(appointment.appointmentAt), "MMM dd, yyyy")}</span>
-                      </div>
-                      <div className="flex items-center gap-1.5 whitespace-nowrap">
-                        <Clock className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-                        <span>{format(parseISO(appointment.appointmentAt), "hh:mm a")}</span>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-sm whitespace-nowrap">
-                    {getDurationLabel(appointment.service.duration)}
-                  </TableCell>
-                  <TableCell>{getStatusBadge(appointment.status)}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center justify-end gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => handleView(appointment)}
-                        title="View Details"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => handleEdit(appointment)}
-                        title="Edit"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => handleDelete(appointment)}
-                        title="Delete"
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
-                    </div>
-                  </TableCell>
+      <>
+        <div className="border rounded-lg overflow-hidden">
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Customer</TableHead>
+                  <TableHead>Service</TableHead>
+                  <TableHead>Staff</TableHead>
+                  <TableHead>Date & Time</TableHead>
+                  <TableHead>Duration</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {paginatedAppointments.map((appointment) => (
+                  <TableRow key={appointment.id}>
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-2">
+                        <User className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                        <span className="max-w-[120px] lg:max-w-none truncate lg:whitespace-normal">
+                          {appointment.customerName}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <span className="max-w-[100px] lg:max-w-none truncate lg:whitespace-normal block">
+                        {appointment.service.name}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      {appointment.staff ? (
+                        <span className="text-sm max-w-[80px] lg:max-w-none truncate lg:whitespace-normal block">
+                          {appointment.staff.name}
+                        </span>
+                      ) : (
+                        <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200 text-xs whitespace-nowrap">
+                          Queue
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col lg:flex-row lg:items-center gap-0.5 lg:gap-2 text-sm">
+                        <div className="flex items-center gap-1.5 whitespace-nowrap">
+                          <Calendar className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                          <span>{format(parseISO(appointment.appointmentAt), "MMM dd, yyyy")}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 whitespace-nowrap">
+                          <Clock className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                          <span>{format(parseISO(appointment.appointmentAt), "hh:mm a")}</span>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-sm whitespace-nowrap">
+                      {getDurationLabel(appointment.service.duration)}
+                    </TableCell>
+                    <TableCell>{getStatusBadge(appointment.status)}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => handleView(appointment)}
+                          title="View Details"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => handleEdit(appointment)}
+                          title="Edit"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => handleDelete(appointment)}
+                          title="Delete"
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </div>
-      </div>
+
+        {/* Pagination Controls */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4">
+          <div className="flex items-center gap-2">
+            <Label htmlFor="items-per-page" className="text-sm text-muted-foreground whitespace-nowrap">
+              Rows per page:
+            </Label>
+            <Select
+              value={itemsPerPage.toString()}
+              onValueChange={(value) => setItemsPerPage(Number(value))}
+            >
+              <SelectTrigger id="items-per-page" className="w-[70px] h-8">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="5">5</SelectItem>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="20">20</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <p className="text-sm text-muted-foreground">
+              Showing {startIndex + 1} to {Math.min(endIndex, filteredAppointments.length)} of{" "}
+              {filteredAppointments.length} results
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Previous
+            </Button>
+            <div className="flex items-center gap-1">
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter((page) => {
+                  // Show first page, last page, current page, and pages around current
+                  return (
+                    page === 1 ||
+                    page === totalPages ||
+                    Math.abs(page - currentPage) <= 1
+                  );
+                })
+                .map((page, index, array) => {
+                  // Add ellipsis if there's a gap
+                  const showEllipsisBefore = index > 0 && page - array[index - 1] > 1;
+                  
+                  return (
+                    <div key={page} className="flex items-center">
+                      {showEllipsisBefore && (
+                        <span className="px-2 text-muted-foreground">...</span>
+                      )}
+                      <Button
+                        variant={currentPage === page ? "default" : "outline"}
+                        size="sm"
+                        className="w-8 h-8 p-0"
+                        onClick={() => setCurrentPage(page)}
+                      >
+                        {page}
+                      </Button>
+                    </div>
+                  );
+                })}
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+              disabled={currentPage === totalPages}
+            >
+              Next
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </>
     )}
   </CardContent>
 </Card>
+
       {/* View Details Modal */}
 <Dialog open={viewOpen} onOpenChange={setViewOpen}>
   <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
@@ -650,7 +750,7 @@ const onSubmit = async (values: AppointmentInput) => {
                 name="customerName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Customer Name</FormLabel>
+                    <FormLabel>Patient Name</FormLabel>
                     <FormControl>
                       <Input placeholder="e.g. John Doe" {...field} />
                     </FormControl>
@@ -881,6 +981,9 @@ const onSubmit = async (values: AppointmentInput) => {
   );
 }
 
+
+
+
 // "use client";
 
 // import { useState, useEffect, useMemo } from "react";
@@ -925,7 +1028,7 @@ const onSubmit = async (values: AppointmentInput) => {
 // } from "@/components/ui/select";
 // import { Badge } from "@/components/ui/badge";
 // import { Skeleton } from "@/components/ui/skeleton";
-// import { Loader2, Plus, Edit, Trash2, Calendar, User, Clock, Filter, X, AlertCircle } from "lucide-react";
+// import { Loader2, Plus, Edit, Trash2, Calendar, User, Clock, Filter, X, AlertCircle, Eye } from "lucide-react";
 // import { toast } from "sonner";
 // import { zodResolver } from "@hookform/resolvers/zod";
 // import { useForm } from "react-hook-form";
@@ -942,6 +1045,7 @@ const onSubmit = async (values: AppointmentInput) => {
 // import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 // import { Label } from "@/components/ui/label";
 // import { Appointment } from "@/types/appointment.types";
+// import { Separator } from "@/components/ui/separator";
 
 // export default function AppointmentsPage() {
 //   const { data: appointments = [], isLoading } = useGetAppointmentsQuery();
@@ -952,6 +1056,8 @@ const onSubmit = async (values: AppointmentInput) => {
 //   const [deleteAppointment, { isLoading: deleting }] = useDeleteAppointmentMutation();
 
 //   const [open, setOpen] = useState(false);
+//   const [viewOpen, setViewOpen] = useState(false);
+//   const [viewingAppointment, setViewingAppointment] = useState<Appointment | null>(null);
 //   const [editingAppointment, setEditingAppointment] = useState<Appointment | null>(null);
 //   const [assignmentMode, setAssignmentMode] = useState<"auto" | "manual">("auto");
   
@@ -1101,8 +1207,10 @@ const onSubmit = async (values: AppointmentInput) => {
 //   }
 // };
 
-
-
+//   const handleView = (appointment: Appointment) => {
+//     setViewingAppointment(appointment);
+//     setViewOpen(true);
+//   };
 
 //   const handleEdit = (appointment: Appointment) => {
 //     setEditingAppointment(appointment);
@@ -1278,7 +1386,6 @@ const onSubmit = async (values: AppointmentInput) => {
 //         </CardContent>
 //       </Card>
 
-      
 // {/* Appointments Table */}
 // <Card>
 //   <CardHeader>
@@ -1302,13 +1409,13 @@ const onSubmit = async (values: AppointmentInput) => {
 //           <Table>
 //             <TableHeader>
 //               <TableRow>
-//                 <TableHead className="min-w-[140px]">Customer</TableHead>
-//                 <TableHead className="min-w-[120px]">Service</TableHead>
-//                 <TableHead className="min-w-[100px]">Staff</TableHead>
-//                 <TableHead className="min-w-[180px]">Date & Time</TableHead>
-//                 <TableHead className="min-w-[80px]">Duration</TableHead>
-//                 <TableHead className="min-w-[100px]">Status</TableHead>
-//                 <TableHead className="text-right min-w-[100px]">Actions</TableHead>
+//                 <TableHead>Customer</TableHead>
+//                 <TableHead>Service</TableHead>
+//                 <TableHead>Staff</TableHead>
+//                 <TableHead>Date & Time</TableHead>
+//                 <TableHead>Duration</TableHead>
+//                 <TableHead>Status</TableHead>
+//                 <TableHead className="text-right">Actions</TableHead>
 //               </TableRow>
 //             </TableHeader>
 //             <TableBody>
@@ -1317,15 +1424,21 @@ const onSubmit = async (values: AppointmentInput) => {
 //                   <TableCell className="font-medium">
 //                     <div className="flex items-center gap-2">
 //                       <User className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-//                       <span className="truncate max-w-[120px]">{appointment.customerName}</span>
+//                       <span className="max-w-[120px] lg:max-w-none truncate lg:whitespace-normal">
+//                         {appointment.customerName}
+//                       </span>
 //                     </div>
 //                   </TableCell>
 //                   <TableCell>
-//                     <span className="truncate block max-w-[100px]">{appointment.service.name}</span>
+//                     <span className="max-w-[100px] lg:max-w-none truncate lg:whitespace-normal block">
+//                       {appointment.service.name}
+//                     </span>
 //                   </TableCell>
 //                   <TableCell>
 //                     {appointment.staff ? (
-//                       <span className="text-sm truncate block max-w-[80px]">{appointment.staff.name}</span>
+//                       <span className="text-sm max-w-[80px] lg:max-w-none truncate lg:whitespace-normal block">
+//                         {appointment.staff.name}
+//                       </span>
 //                     ) : (
 //                       <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200 text-xs whitespace-nowrap">
 //                         Queue
@@ -1333,7 +1446,7 @@ const onSubmit = async (values: AppointmentInput) => {
 //                     )}
 //                   </TableCell>
 //                   <TableCell>
-//                     <div className="flex flex-col gap-0.5 text-sm">
+//                     <div className="flex flex-col lg:flex-row lg:items-center gap-0.5 lg:gap-2 text-sm">
 //                       <div className="flex items-center gap-1.5 whitespace-nowrap">
 //                         <Calendar className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
 //                         <span>{format(parseISO(appointment.appointmentAt), "MMM dd, yyyy")}</span>
@@ -1344,7 +1457,9 @@ const onSubmit = async (values: AppointmentInput) => {
 //                       </div>
 //                     </div>
 //                   </TableCell>
-//                   <TableCell className="text-sm whitespace-nowrap">{getDurationLabel(appointment.service.duration)}</TableCell>
+//                   <TableCell className="text-sm whitespace-nowrap">
+//                     {getDurationLabel(appointment.service.duration)}
+//                   </TableCell>
 //                   <TableCell>{getStatusBadge(appointment.status)}</TableCell>
 //                   <TableCell>
 //                     <div className="flex items-center justify-end gap-1">
@@ -1352,7 +1467,17 @@ const onSubmit = async (values: AppointmentInput) => {
 //                         variant="ghost"
 //                         size="icon"
 //                         className="h-8 w-8"
+//                         onClick={() => handleView(appointment)}
+//                         title="View Details"
+//                       >
+//                         <Eye className="h-4 w-4" />
+//                       </Button>
+//                       <Button
+//                         variant="ghost"
+//                         size="icon"
+//                         className="h-8 w-8"
 //                         onClick={() => handleEdit(appointment)}
+//                         title="Edit"
 //                       >
 //                         <Edit className="h-4 w-4" />
 //                       </Button>
@@ -1361,6 +1486,7 @@ const onSubmit = async (values: AppointmentInput) => {
 //                         size="icon"
 //                         className="h-8 w-8"
 //                         onClick={() => handleDelete(appointment)}
+//                         title="Delete"
 //                       >
 //                         <Trash2 className="h-4 w-4 text-destructive" />
 //                       </Button>
@@ -1375,7 +1501,124 @@ const onSubmit = async (values: AppointmentInput) => {
 //     )}
 //   </CardContent>
 // </Card>
+//       {/* View Details Modal */}
+// <Dialog open={viewOpen} onOpenChange={setViewOpen}>
+//   <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
+//     <DialogHeader>
+//       <DialogTitle className="flex items-center gap-2">
+//         <Calendar className="h-5 w-5" />
+//         Appointment Details
+//       </DialogTitle>
+//     </DialogHeader>
+//     {viewingAppointment && (
+//       <div className="space-y-6 py-4">
+//         {/* Customer Info */}
+//         <div className="space-y-3">
+//           <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+//             Customer Information
+//           </h3>
+//           <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg">
+//             <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+//               <User className="h-6 w-6 text-primary" />
+//             </div>
+//             <div>
+//               <p className="font-semibold text-lg">{viewingAppointment.customerName}</p>
+//               <p className="text-sm text-muted-foreground">Customer</p>
+//             </div>
+//           </div>
+//         </div>
 
+//         <Separator />
+
+//         {/* Service & Staff Info */}
+//         <div className="grid grid-cols-2 gap-4">
+//           <div className="space-y-2">
+//             <Label className="text-muted-foreground">Service</Label>
+//             <p className="font-medium">{viewingAppointment.service.name}</p>
+//             <div className="flex items-center gap-2 text-sm text-muted-foreground">
+//               <Clock className="h-3.5 w-3.5" />
+//               {getDurationLabel(viewingAppointment.service.duration)}
+//             </div>
+//           </div>
+//           <div className="space-y-2">
+//             <Label className="text-muted-foreground">Assigned Staff</Label>
+//             {viewingAppointment.staff ? (
+//               <div>
+//                 <p className="font-medium">{viewingAppointment.staff.name}</p>
+//                 <p className="text-sm text-muted-foreground capitalize">
+//                   {viewingAppointment.staff.serviceType.replace("_", " ").toLowerCase()}
+//                 </p>
+//               </div>
+//             ) : (
+//               <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
+//                 In Waiting Queue
+//               </Badge>
+//             )}
+//           </div>
+//         </div>
+
+//         <Separator />
+
+//         {/* Date & Time */}
+//         <div className="space-y-2">
+//           <Label className="text-muted-foreground">Appointment Date & Time</Label>
+//           <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
+//             <div className="flex items-center gap-2">
+//               <Calendar className="h-5 w-5 text-primary" />
+//               <div>
+//                 <p className="font-medium">
+//                   {format(parseISO(viewingAppointment.appointmentAt), "EEEE, MMMM dd, yyyy")}
+//                 </p>
+//                 <p className="text-sm text-muted-foreground">
+//                   {format(parseISO(viewingAppointment.appointmentAt), "hh:mm a")}
+//                 </p>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+
+//         <Separator />
+
+//         {/* Status & Metadata */}
+//         <div className="grid grid-cols-2 gap-4">
+//           <div className="space-y-2">
+//             <Label className="text-muted-foreground">Status</Label>
+//             <div>{getStatusBadge(viewingAppointment.status)}</div>
+//           </div>
+//           <div className="space-y-2">
+//             <Label className="text-muted-foreground">Service Type</Label>
+//             <p className="font-medium capitalize">
+//               {viewingAppointment.service.requiredStaffType.replace("_", " ").toLowerCase()}
+//             </p>
+//           </div>
+//         </div>
+
+//         {/* Timestamps */}
+//         <div className="pt-4 border-t text-xs text-muted-foreground space-y-1">
+//           <p>Created: {format(parseISO(viewingAppointment.createdAt), "MMM dd, yyyy 'at' hh:mm a")}</p>
+//           <p>Last Updated: {format(parseISO(viewingAppointment.updatedAt), "MMM dd, yyyy 'at' hh:mm a")}</p>
+//         </div>
+//       </div>
+//     )}
+//     <DialogFooter className="sm:justify-between sticky bottom-0 bg-background pt-4 border-t">
+//       <Button
+//         variant="outline"
+//         onClick={() => {
+//           setViewOpen(false);
+//           if (viewingAppointment) {
+//             handleEdit(viewingAppointment);
+//           }
+//         }}
+//       >
+//         <Edit className="mr-2 h-4 w-4" />
+//         Edit
+//       </Button>
+//       <Button variant="default" onClick={() => setViewOpen(false)}>
+//         Close
+//       </Button>
+//     </DialogFooter>
+//   </DialogContent>
+// </Dialog>
 
 //       {/* Add / Edit Dialog */}
 //       <Dialog open={open} onOpenChange={setOpen}>
@@ -1484,72 +1727,6 @@ const onSubmit = async (values: AppointmentInput) => {
 //                     </div>
 //                   </RadioGroup>
 
-//                   {/* Manual Staff Selection
-//                   {assignmentMode === "manual" && (
-//                     <FormField
-//                       control={form.control}
-//                       name="staffId"
-//                       render={({ field }) => (
-//                         <FormItem>
-//                           <FormLabel>Select Staff</FormLabel>
-//                           <Select
-//                             onValueChange={field.onChange}
-//                             defaultValue={field.value}
-//                             value={field.value}
-//                           >
-//                             <FormControl>
-//                               <SelectTrigger>
-//                                 <SelectValue placeholder="Choose a staff member" />
-//                               </SelectTrigger>
-//                             </FormControl>
-//                             <SelectContent>
-//                               {eligibleStaff.length === 0 ? (
-//                                 <div className="p-2 text-sm text-muted-foreground text-center">
-//                                   No eligible staff available for this service
-//                                 </div>
-//                               ) : (
-//                                 eligibleStaff.map((staff) => {
-//                                   const count = staffCapacity[staff.id] || 0;
-//                                   const isAtCapacity = count >= staff.dailyCapacity;
-//                                   return (
-//                                     <SelectItem
-//                                       key={staff.id}
-//                                       value={staff.id}
-//                                       disabled={isAtCapacity}
-//                                     >
-//                                       <div className="flex items-center justify-between w-full">
-//                                         <span>
-//                                           {staff.name} ({count} / {staff.dailyCapacity})
-//                                         </span>
-//                                         {isAtCapacity && (
-//                                           <Badge
-//                                             variant="secondary"
-//                                             className="ml-2 bg-red-100 text-red-800"
-//                                           >
-//                                             Full
-//                                           </Badge>
-//                                         )}
-//                                       </div>
-//                                     </SelectItem>
-//                                   );
-//                                 })
-//                               )}
-//                             </SelectContent>
-//                           </Select>
-//                           {assignmentMode === "manual" && eligibleStaff.length > 0 && (
-//                             <p className="text-xs text-muted-foreground mt-1">
-//                               Showing {eligibleStaff.length} available{" "}
-//                               {selectedService?.requiredStaffType.replace("_", " ").toLowerCase()}
-//                               (s)
-//                             </p>
-//                           )}
-//                           <FormMessage />
-//                         </FormItem>
-//                       )}
-//                     />
-//                   )} */}
-
-//                   {/* Manual Staff Selection */}
 // {assignmentMode === "manual" && (
 //   <FormField
 //     control={form.control}
@@ -1689,3 +1866,5 @@ const onSubmit = async (values: AppointmentInput) => {
 //     </div>
 //   );
 // }
+
+
