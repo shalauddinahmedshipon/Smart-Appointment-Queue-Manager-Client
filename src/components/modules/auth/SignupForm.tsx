@@ -61,7 +61,12 @@ export default function SignupForm() {
     try {
       const res = await signup(formData).unwrap();
 
-      dispatch(setCredentials({ user: res.user }));
+       dispatch(
+      setCredentials({
+        user: res.user,
+        accessToken: res.accessToken, // 🔥 REQUIRED
+      })
+    );
       toast.success("Account created successfully!");
       router.push("/dashboard");
     } catch (err: any) {
