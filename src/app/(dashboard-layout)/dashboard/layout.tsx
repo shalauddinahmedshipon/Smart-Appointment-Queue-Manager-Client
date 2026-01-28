@@ -1,5 +1,4 @@
 import { AppSidebar } from "@/components/modules/dashboard/app-sidebar";
-import ProtectedRoute from "@/components/ProtectedRoute";
 import { Separator } from "@/components/ui/separator"
 import {
   SidebarInset,
@@ -14,7 +13,6 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   return (
-  <ProtectedRoute>
  <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
@@ -37,7 +35,6 @@ export default function DashboardLayout({
         </div>
       </SidebarInset>
     </SidebarProvider>
-     </ProtectedRoute>
    
   )
 }
