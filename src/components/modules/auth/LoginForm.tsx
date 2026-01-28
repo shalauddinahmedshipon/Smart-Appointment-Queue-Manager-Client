@@ -46,12 +46,12 @@ export default function LoginForm() {
     try {
       const res = await login(values).unwrap();
 
-      dispatch(
-        setCredentials({
-          user: res.user,
-        })
-      );
-
+       dispatch(
+      setCredentials({
+        user: res.user,
+        accessToken: res.accessToken, // 🔥 REQUIRED
+      })
+    );
       toast.success("Login successful");
 
       router.push("/dashboard");

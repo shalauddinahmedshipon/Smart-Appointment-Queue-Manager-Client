@@ -31,7 +31,6 @@ import {
 } from "@/components/ui/sidebar"
 
 import Link from "next/link"
-import { useLogoutMutation } from "@/store/api/auth.api"
 import { useAppDispatch } from "@/store/hooks"
 import { logout as logoutAction } from "@/store/slices/auth.slice"
 
@@ -48,18 +47,10 @@ export function NavUser({
   const router = useRouter()
   const dispatch = useAppDispatch()
 
-  const [logoutApi, { isLoading }] = useLogoutMutation()
 
-  const handleLogout = async () => {
-    try {
-      await logoutApi().unwrap()
-    } catch (err) {
-      // even if API fails, force logout on client
-      console.error("Logout failed", err)
-    } finally {
-      dispatch(logoutAction())
-      router.replace("/")
-    }
+ const handleLogout = () => {
+    dispatch(logoutAction())     // 🔥 clear user + token
+    router.replace("/")          // 🔥 redirect to login
   }
 
   return (
@@ -124,7 +115,6 @@ export function NavUser({
 
             <DropdownMenuItem
               onClick={handleLogout}
-              disabled={isLoading}
               className="text-red-600 focus:text-red-600"
             >
               <LogOut className="mr-2 h-4 w-4" />

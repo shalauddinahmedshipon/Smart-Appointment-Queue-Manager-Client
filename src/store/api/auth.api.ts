@@ -4,42 +4,39 @@ import { baseApi } from "./baseApi";
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    login: builder.mutation<{
-      user: any;
-    }, { email: string; password: string }>({
+    login: builder.mutation<
+      { user: User; accessToken: string },
+      { email: string; password: string }
+    >({
       query: (credentials) => ({
-        url: "/auth/login",        // ← Fixed: was "/auth/"
+        url: "/auth/login",
         method: "POST",
         body: credentials,
       }),
       transformResponse: (response: any) => ({
-        user: response.data,       // ← Backend returns { data: account }
+        user: response.data.account,
+        accessToken: response.data.accessToken,
       }),
     }),
 
-    signup: builder.mutation<{
-      user: any;
-    }, FormData>({
+    signup: builder.mutation<
+      { user: User; accessToken: string },
+      FormData
+    >({
       query: (formData) => ({
         url: "/auth/signup",
         method: "POST",
         body: formData,
       }),
       transformResponse: (response: any) => ({
-        user: response.data,
+        user: response.data.account,
+        accessToken: response.data.accessToken,
       }),
     }),
 
     getMe: builder.query<User, void>({
       query: () => "/auth/me",
-      transformResponse: (response: any) => response, // ← getMe returns account directly
-    }),
-
-    logout: builder.mutation<void, void>({
-      query: () => ({
-        url: "/auth/logout",
-        method: "POST",
-      }),
+      transformResponse: (response: any) => response,
     }),
   }),
 });
@@ -47,6 +44,5 @@ export const authApi = baseApi.injectEndpoints({
 export const {
   useLoginMutation,
   useSignupMutation,
-  useGetMeQuery,
-  useLogoutMutation,
+  useGetMeQuery
 } = authApi;
