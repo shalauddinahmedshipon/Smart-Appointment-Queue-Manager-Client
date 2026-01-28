@@ -37,6 +37,21 @@ export const authApi = baseApi.injectEndpoints({
     getMe: builder.query<User, void>({
       query: () => "/auth/me",
       transformResponse: (response: any) => response,
+      providesTags: ["User"],
+    }),
+    
+    updateAccount: builder.mutation<
+      { message: string; account: User },
+      FormData
+    >({
+      query: (formData) => ({
+        url: "/auth/update-account",
+        method: "PATCH",
+        body: formData,
+      }),
+      transformResponse: (response: any) => response.data,
+      // Invalidate the getMe query to refetch user data after update
+      invalidatesTags: ["User"],
     }),
   }),
 });
@@ -44,5 +59,6 @@ export const authApi = baseApi.injectEndpoints({
 export const {
   useLoginMutation,
   useSignupMutation,
-  useGetMeQuery
+  useGetMeQuery,
+  useUpdateAccountMutation,
 } = authApi;

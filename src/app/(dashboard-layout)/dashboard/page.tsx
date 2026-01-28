@@ -27,7 +27,7 @@ export default function DashboardPage() {
     data: logs = [],
     isLoading: logsLoading,
     error: logsError,
-  } = useGetActivityLogsQuery({ limit: 5 });
+  } = useGetActivityLogsQuery({ limit: 10 });
 
   if (statsLoading || logsLoading) {
     return (
@@ -124,7 +124,7 @@ export default function DashboardPage() {
                     key={staff.name}
                     className="flex items-center justify-between py-2 border-b last:border-0"
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 text-xs">
                       <Users className="h-5 w-5 text-muted-foreground" />
                       <span className="font-medium">{staff.name}</span>
                     </div>
@@ -132,7 +132,7 @@ export default function DashboardPage() {
                       variant={
                         staff.status === "OK" ? "secondary" : "destructive"
                       }
-                      className="text-sm"
+                      className="text-xs"
                     >
                       {staff.load} {staff.status}
                     </Badge>
@@ -148,7 +148,7 @@ export default function DashboardPage() {
           <CardHeader>
             <CardTitle>Recent Activity</CardTitle>
             <CardDescription>
-              Latest actions in the system (last 5)
+              Latest actions in the system (last 10)
             </CardDescription>
           </CardHeader>
           <CardContent>

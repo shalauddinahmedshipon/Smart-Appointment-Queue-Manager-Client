@@ -33,6 +33,8 @@ import {
 import Link from "next/link"
 import { useAppDispatch } from "@/store/hooks"
 import { logout as logoutAction } from "@/store/slices/auth.slice"
+import { store } from "@/store"
+import { baseApi } from "@/store/api"
 
 export function NavUser({
   user,
@@ -50,6 +52,7 @@ export function NavUser({
 
  const handleLogout = () => {
     dispatch(logoutAction())     // 🔥 clear user + token
+     store.dispatch(baseApi.util.resetApiState())
     router.replace("/")          // 🔥 redirect to login
   }
 

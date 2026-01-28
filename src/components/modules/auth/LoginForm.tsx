@@ -28,6 +28,8 @@ import { useLoginMutation } from "@/store/api/auth.api";
 import { useAppDispatch } from "@/store/hooks";
 import { setCredentials } from "@/store/slices/auth.slice";
 import { toast } from "sonner";
+import { store } from "@/store";
+import { baseApi } from "@/store/api";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -52,6 +54,7 @@ export default function LoginForm() {
         accessToken: res.accessToken, // 🔥 REQUIRED
       })
     );
+     store.dispatch(baseApi.util.resetApiState())
       toast.success("Login successful");
 
       router.push("/dashboard");

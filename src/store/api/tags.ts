@@ -10,4 +10,5 @@ export type AppTagTypes =
   | 'ServicesList'
   | 'Staff'
   | 'StaffList'
+  | 'User'
   ;

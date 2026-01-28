@@ -46,27 +46,23 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
     )
   }
 
-  // ────────────────────────────────────────────────
-  // User & Organization Data
-  // ────────────────────────────────────────────────
-  const data = React.useMemo(
-    () => ({
-      user: {
-        name: user?.organizationName ?? "Your Clinic",
-        email: user?.email ?? "admin@clinic.com",
-        avatar: user?.organizationLogo ?? "/default-clinic-logo.png", // fallback image
-      },
-      teams: [
-        {
-          name: user?.organizationName ?? "Clinic",
-          logo: user?.organizationLogo ?? "/default-clinic-logo.png",
-          // logo: Building2,           // suitable icon for organization/clinic
-          plan: "Organization Admin", // can be removed or made dynamic later
-        },
-      ],
-    }),
-    [user]
-  )
+ 
+
+  const data = {
+  user: {
+    name: user?.organizationName ?? "Your Clinic",
+    email: user?.email ?? "admin@clinic.com",
+    avatar: user?.organizationLogo ?? "/default-clinic-logo.png",
+  },
+  teams: [
+    {
+      name: user?.organizationName ?? "Clinic",
+      logo: user?.organizationLogo ?? "/default-clinic-logo.png",
+      plan: "Organization Admin",
+    },
+  ],
+}
+
 
   // ────────────────────────────────────────────────
   // Navigation Items – relevant to appointment queue system
@@ -97,12 +93,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
         title: "Staff",
         url: "/dashboard/staff",
         icon: Users,
-      },
-      {
-        title: "Settings",
-        url: "/dashboard/settings",
-        icon: Settings,
-      },
+      }
     ],
     []
   )

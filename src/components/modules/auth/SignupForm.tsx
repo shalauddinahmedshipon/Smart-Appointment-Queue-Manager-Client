@@ -30,6 +30,8 @@ import { useAppDispatch } from "@/store/hooks";
 import { setCredentials } from "@/store/slices/auth.slice";
 import { toast } from "sonner";
 import { useState } from "react";
+import { store } from "@/store";
+import { baseApi } from "@/store/api";
 
 export default function SignupForm() {
   const router = useRouter();
@@ -67,6 +69,8 @@ export default function SignupForm() {
         accessToken: res.accessToken, // 🔥 REQUIRED
       })
     );
+
+     store.dispatch(baseApi.util.resetApiState())
       toast.success("Account created successfully!");
       router.push("/dashboard");
     } catch (err: any) {
