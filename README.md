@@ -1,11 +1,13 @@
 # Smart Appointment & Queue Manager (Server)
 
-Modern web application for managing appointments, staff availability, and customer waiting queues with smart conflict detection and auto-assignment.
+Multi Organization support modern web application for managing appointments, staff availability, and customer waiting queues with smart conflict detection and auto-assignment.
 
 Live Demo  
 **Frontend:** https://smart-appointment-queue-manager-cli.vercel.app  
 **Backend API:** https://smart-appointment-queue-manager-server-5gix.onrender.com  
 **API Documentation (Swagger):** https://smart-appointment-queue-manager-server-5gix.onrender.com/docs
+
+**Backend Repo:** https://github.com/shalauddinahmedshipon/Smart-Appointment-Queue-Manager-Server
 
 
 ## Project Links
@@ -34,6 +36,7 @@ Live Demo
 **Backend**
 - NestJS (TypeScript)
 - PostgreSQL + Prisma ORM
+- Cron Job
 - JWT Authentication
 - Swagger / OpenAPI docs
 
@@ -50,16 +53,17 @@ Live Demo
 
 ```bash
 # Backend
-git clone <your-repo>
+git clone https://github.com/shalauddinahmedshipon/Smart-Appointment-Queue-Manager-Server
 cd backend
 npm install
 cp .env.example .env
 # edit DATABASE_URL, JWT_SECRET...
 npm run prisma:generate
 npm run prisma:db-push    # or migrate dev
-npm run start:dev
+npm run dev
 
 # Frontend (in separate terminal)
+git clone https://github.com/shalauddinahmedshipon/Smart-Appointment-Queue-Manager-Client
 cd frontend
 npm install
 npm run dev
