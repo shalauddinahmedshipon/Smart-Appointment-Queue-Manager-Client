@@ -1,4 +1,4 @@
-# Smart Appointment & Queue Manager (Server)
+# Smart Appointment & Queue Manager (Client)
 
 Multi Organization support modern web application for managing appointments, staff availability, and customer waiting queues with smart conflict detection and auto-assignment.
 
